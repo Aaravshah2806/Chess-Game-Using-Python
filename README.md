@@ -1,55 +1,78 @@
-# Python Chess
+# ♟️ Python Chess Game & Web Launcher
 
-I created this project to improve my skills in Python.
+Welcome to **Week 1** of my "12 Weeks 12 Projects" challenge! This project is a comprehensive Chess implementation featuring a robust Python-based chess engine, a Playable Desktop GUI, and a modern Web Launcher.
 
-## Key Focus Areas
-- Primary goal I achieved: Logical Thinking
+## 🚀 Project Overview
 
+This project is a hybrid Chess Game developed using the Flask framework and Pygame in Python. The application provides a seamless bridge between a web-based control interface and a desktop gameplay environment.
 
+Once the user launches the game via the web dashboard, the backend initializes the chess engine to handle the match logic. The system validates all moves against standard chess rules, ensuring compliance with complex mechanics like castling, en passant, and pawn promotion. The backend also manages game state and communicates it effectively.
 
+The frontend is styled using HTML and CSS to provide a clean, modern, and user-friendly interface for starting game sessions. Error handling and process management are implemented to ensure the desktop game launches smoothly and interacts correctly with the web server.
 
-## Python Chess
+## ✨ Key Features
 
-Here's how I organized my code (ASCII tree):
+- **Advanced Chess Engine**:
+  - Full implementation of chess rules and piece logic.
+  - Supports special moves: **Pawn Promotion**, **Castling**, and **En Passant**.
+  - Check and Checkmate detection.
+- **Dual Interface**:
+  - **Desktop**: A responsive Pygame window for the actual gameplay.
+  - **Web**: A modern HTML/CSS/JS dashboard to launch and manage the game.
+- **Architecture**:
+  - Modular Object-Oriented Design (Board, Game, Pieces).
+  - Flask Rest API for game state management and launching logic.
 
+## 🛠️ Tech Stack
 
-```
+- **Language**: Python 3.9+
+- **Desktop GUI**: Pygame
+- **Backend**: Flask
+- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+
+## 📂 Project Structure
+
+```text
 Chess Game/
-├── Main.py/          # Main source code I wrote
-├── Board.py/
-├── Constants.py/
-├── Game.py/
-├── Promotion.py/
-├── Images/           #Chess Pieces Image
-│   ├── black-bishop.png
-│   ├── black-king.png
-│   ├── black-knight.png
-│   ├── black-pawn.png
-│   ├── black-queen.png
-│   ├── black-rook.png
-│   ├── white-bishop.png
-│   ├── white-king.png
-│   ├── white-knight.png
-│   ├── white-pawn.png
-│   ├── white-queen.png
-│   └── white-rook.png
-└── pieces/           # Logics For all chess pieces
-    ├── __init__.py
-    ├── bishop.py
-    ├── king.py
-    ├── knight.py
-    ├── pawn.py
-    ├── piece.py
-    ├── queen.py
-    └── rook.py            
+├── backend/          # Flask backend handling the launcher and API
+│   └── app.py
+├── simple_frontend/  # Web interface assets
+│   ├── index.html
+│   ├── script.js
+│   └── style.css
+├── pieces/           # Individual piece logic (OOP)
+├── images/           # Assets for the GUI
+├── main.py           # Entry point for the Desktop Game
+├── game.py           # Core game loop and state management
+├── board.py          # Board representation
+└── chess_engine.py   # Move validation and rule enforcement
 ```
 
+## 🎮 How to Run
 
+1. **Install Dependencies**:
 
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## Feedback
+2. **Start the Web Launcher**:
 
-I'd love your input! Please:
-- Open issues on [my GitHub repo](https://github.com/Aaravshah2806/Chess-Game-Using-Python/issues)
+   ```bash
+   python backend/app.py
+   ```
 
-I appreciate all feedback!
+   Open `http://localhost:5000` in your browser.
+
+3. **Play**:
+   Click **"PLAY GAME"** on the web interface to launch the desktop window!
+
+## 🧠 Key Learnings
+
+- **Logical Thinking**: Designing complex algorithms for move validation.
+- **System Integration**: Connecting a web backend with a local desktop subprocess.
+- **OOP Principles**: efficient class inheritance for Chess pieces.
+
+---
+
+_Created by [Aarav Shah](https://github.com/Aaravshah2806)_

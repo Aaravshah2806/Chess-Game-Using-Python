@@ -1,52 +1,52 @@
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Outfit', sans-serif;
-    color: white;
-    background-color: #0F0F0F;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+  margin: 0;
+  padding: 0;
+  font-family: "Outfit", sans-serif;
+  color: white;
+  background-color: #0f0f0f;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 .background-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at center, #2a2a2a 0%, #000 100%);
-    z-index: -1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, #2a2a2a 0%, #000 100%);
+  z-index: -1;
 }
 
 .hero {
-    text-align: center;
-    position: relative;
-    z-index: 10;
+  text-align: center;
+  position: relative;
+  z-index: 10;
 }
 
 .title {
-    font-size: 5rem;
-    font-weight: 700;
-    letter-spacing: -2px;
-    margin-bottom: 0.5rem;
-    background: linear-gradient(135deg, #fff 0%, #aaa 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  font-size: 5rem;
+  font-weight: 700;
+  letter-spacing: -2px;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .subtitle {
-    font-size: 1.5rem;
-    color: #888;
-    margin-bottom: 3rem;
-    font-weight: 300;
+  font-size: 1.5rem;
+  color: #888;
+  margin-bottom: 3rem;
+  font-weight: 300;
 }
 
-
+/* Button styling */
 .button {
   margin: 0;
   height: auto;
@@ -54,13 +54,9 @@ body {
   padding: 0;
   border: none;
   cursor: pointer;
-}
-
-/* Button styling */
-.button {
   --border-right: 6px;
-  --text-stroke-color: rgba(255,255,255,0.6);
-  --animation-color: #37FF8B;
+  --text-stroke-color: rgba(255, 255, 255, 0.6);
+  --animation-color: #37ff8b;
   --fs-size: 2em;
   letter-spacing: 3px;
   text-decoration: none;
@@ -72,20 +68,31 @@ body {
   -webkit-text-stroke: 1px var(--text-stroke-color);
   white-space: nowrap;
 }
-/* This is the hover text */
+
+/* Base text (keeps the button size) */
+.actual-text {
+  position: relative;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--text-stroke-color);
+}
+
+/* Hover overlay text */
 .hover-text {
   position: absolute;
+  top: 0;
+  left: 0;
   box-sizing: border-box;
-  content: attr(data-text);
   color: var(--animation-color);
   width: 0%;
-  inset: 0;
-  border-right: none;
+  height: 100%;
+  border-right: 6px solid transparent; /* invisible border initially */
   overflow: hidden;
   transition: 0.5s;
   -webkit-text-stroke: 1px var(--animation-color);
+  white-space: nowrap;
 }
-/* Hover */
+
+/* Hover Animation */
 .button:hover .hover-text {
   width: 100%;
   filter: drop-shadow(0 0 23px var(--animation-color));
@@ -93,28 +100,28 @@ body {
 }
 
 button:active {
-    transform: translateY(1px);
+  transform: translateY(1px);
 }
 
 /* Footer Credits */
 .footer {
-    position: fixed;
-    bottom: 20px;
-    right: 30px;
-    font-size: 0.9rem;
-    color: #666;
-    letter-spacing: 1px;
-    z-index: 100;
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  font-size: 0.9rem;
+  color: #666;
+  letter-spacing: 1px;
+  z-index: 100;
 }
 
 .status {
-    margin-top: 20px;
-    font-size: 0.9rem;
-    color: #666;
-    height: 20px;
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #666;
+  height: 20px;
 }
 
-/* From Uiverse.io by Artahs */ 
+/* From Uiverse.io by Artahs */
 ul {
   list-style: none;
   padding: 0;
@@ -203,5 +210,5 @@ ul {
 }
 .example-2 .icon-content a[data-social="leetcode"] .filled,
 .example-2 .icon-content a[data-social="leetcode"] ~ .tooltip {
-  background-color: #FFA116;
+  background-color: #ffa116;
 }
