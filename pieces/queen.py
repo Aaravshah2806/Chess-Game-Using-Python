@@ -1,7 +1,8 @@
 from .piece import Piece
 
+
 class Queen(Piece):
-    def __init__(self, color, position, image, small_image):
+    def __init__(self, color, position, image=None, small_image=None):
         super().__init__('queen', color, position, image, small_image)
 
     def get_valid_moves(self, pieces, white_locations, black_locations):

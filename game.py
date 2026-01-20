@@ -5,6 +5,8 @@ from pieces import Pawn, Rook, Knight, Bishop, Queen, King
 
 class Game:
     def __init__(self):
+        import os
+        os.environ['SDL_VIDEO_CENTERED'] = '1'
         pygame.init()
         self.screen = pygame.display.set_mode([WIDTH, HEIGHT])
         pygame.display.set_caption('Chess Game')
@@ -188,6 +190,7 @@ class Game:
              text = f'{self.winner} won the game!'
         self.screen.blit(self.font.render(text, True, 'white'), (210, 210))
         self.screen.blit(self.font.render(f'Press ENTER to Restart', True, 'white'), (210, 240))
+        self.screen.blit(self.font.render(f'Press ESC to Exit', True, 'white'), (210, 270))
 
     def is_king_in_check(self, pieces, turn):
         # pieces argument seems unused in original logic?
@@ -398,6 +401,9 @@ class Game:
                          self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
                          self.white_options = self.check_options(self.white_pieces, self.white_locations, 'white')
 
+                    if event.key == pygame.K_ESCAPE:
+                        run = False
+
             # Update Valid Moves for drawing
             if self.selection != 100:
                 self.valid_moves = self.check_valid_moves()
@@ -405,6 +411,10 @@ class Game:
             # Checkmate Detection
             if self.winner != '':
                 self.game_over = True
+            
+            pygame.display.flip()
+        
+        pygame.quit()
                 
     def check_promotion(self, piece, clicked_coords):
         if piece.name == 'pawn':
@@ -464,5 +474,4 @@ class Game:
                            if not any(self.black_options):
                                self.winner = 'draw'
 
-            pygame.display.flip()
-        pygame.quit()
+

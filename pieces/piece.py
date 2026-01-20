@@ -1,13 +1,13 @@
 import pygame
 
 class Piece:
-    def __init__(self, name, color, position, image, small_image):
+    def __init__(self, name, color, position, image=None, small_image=None):
         self.name = name
         self.color = color
         self.position = position  # Tuple (x, y)
         self.image = image
         self.small_image = small_image
-        self.rect = self.image.get_rect()
+        self.rect = self.image.get_rect() if self.image else None
     
     def draw(self, screen):
         # Position is grid coordinates (0-7), we need to convert to pixels
