@@ -1,31 +1,42 @@
-async function launchGame() {
-  const btn = document.getElementById("play-btn");
-  const status = document.getElementById("status");
+function launchGame() {
+  const container = document.getElementById("game-container");
+  const frame = document.getElementById("game-frame");
 
-  btn.disabled = true;
-  btn.innerText = "LAUNCHING...";
-  status.innerText = "Starting Chess Engine...";
+  // Show the game container and loader
+  container.classList.remove("hidden");
+  const loader = document.getElementById("loader");
+  loader.classList.remove("hidden");
+  frame.classList.add("hidden");
 
-  try {
-    const res = await fetch("/launch", { method: "POST" });
-    const data = await res.json();
+  // Load the pygbag game
+  frame.src = "game_view/index.html";
 
-    if (data.success) {
-      status.innerText = "Game Running!";
-      setTimeout(() => {
-        btn.disabled = false;
-        btn.innerText = "PLAY GAME";
-        status.innerText = "";
-      }, 3000);
-    } else {
-      status.innerText = "Error: " + data.message;
-      btn.disabled = false;
-      btn.innerText = "PLAY GAME";
+  const closeGame = () => {
+    container.classList.add("hidden");
+    frame.src = "";
+    window.removeEventListener("keydown", parentHandle);
+  };
+
+  const parentHandle = (e) => {
+    if (e.key === "Escape") closeGame();
+  };
+
+  window.addEventListener("keydown", parentHandle);
+
+  frame.onload = () => {
+    setTimeout(() => {
+      loader.classList.add("hidden");
+      frame.classList.remove("hidden");
+      frame.contentWindow.focus();
+    }, 1000);
+
+    try {
+      frame.contentWindow.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeGame();
+      });
+      frame.contentWindow.focus();
+    } catch (err) {
+      console.warn("Could not attach key listener to iframe:", err);
     }
-  } catch (e) {
-    console.error(e);
-    status.innerText = "Connection Error";
-    btn.disabled = false;
-    btn.innerText = "PLAY GAME";
-  }
+  };
 }

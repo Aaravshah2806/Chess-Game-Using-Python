@@ -1,52 +1,141 @@
-body {
+/* ============================================
+   PYTHON CHESS - Premium UI Design
+   ============================================ */
+
+/* CSS Variables for theming */
+:root {
+  --primary-color: #37ff8b;
+  --primary-glow: rgba(55, 255, 139, 0.4);
+  --secondary-color: #00d9ff;
+  --background-dark: #0a0a0f;
+  --background-medium: #12121a;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-muted: rgba(255, 255, 255, 0.3);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+body {
   font-family: "Outfit", sans-serif;
-  color: white;
-  background-color: #0f0f0f;
-  height: 100vh;
+  color: var(--text-primary);
+  background-color: var(--background-dark);
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
 }
 
+/* Animated gradient background */
 .background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(55, 255, 139, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(0, 217, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, var(--background-medium) 0%, var(--background-dark) 100%);
+  z-index: -2;
+  animation: pulseBackground 8s ease-in-out infinite alternate;
+}
+
+@keyframes pulseBackground {
+  0% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+/* Animated grid overlay */
+.background-overlay::before {
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, #2a2a2a 0%, #000 100%);
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
   z-index: -1;
 }
 
+/* Floating particles effect */
+.background-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 25% 25%, var(--primary-color) 0%, transparent 2px),
+    radial-gradient(circle at 75% 75%, var(--secondary-color) 0%, transparent 2px),
+    radial-gradient(circle at 50% 10%, var(--primary-color) 0%, transparent 1px),
+    radial-gradient(circle at 10% 80%, var(--secondary-color) 0%, transparent 1px);
+  background-size: 100% 100%;
+  opacity: 0.3;
+  animation: floatParticles 20s linear infinite;
+}
+
+@keyframes floatParticles {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-20px) rotate(5deg); }
+}
+
+/* Hero section with glassmorphism */
 .hero {
   text-align: center;
   position: relative;
   z-index: 10;
+  padding: 4rem 3rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
+/* Title with animated gradient */
 .title {
-  font-size: 5rem;
+  font-size: clamp(3rem, 8vw, 5rem);
   font-weight: 700;
   letter-spacing: -2px;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+  background: linear-gradient(135deg, #fff 0%, var(--primary-color) 50%, var(--secondary-color) 100%);
+  background-size: 200% 200%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  animation: gradientShift 5s ease infinite;
+  text-shadow: 0 0 60px var(--primary-glow);
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .subtitle {
-  font-size: 1.5rem;
-  color: #888;
-  margin-bottom: 3rem;
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  margin-bottom: 2.5rem;
   font-weight: 300;
+  letter-spacing: 0.5px;
 }
 
-/* Button styling */
+/* Premium button with hover effects */
 .button {
   margin: 0;
   height: auto;
@@ -55,10 +144,10 @@ body {
   border: none;
   cursor: pointer;
   --border-right: 6px;
-  --text-stroke-color: rgba(255, 255, 255, 0.6);
-  --animation-color: #37ff8b;
-  --fs-size: 2em;
-  letter-spacing: 3px;
+  --text-stroke-color: var(--text-secondary);
+  --animation-color: var(--primary-color);
+  --fs-size: 1.8em;
+  letter-spacing: 4px;
   text-decoration: none;
   font-size: var(--fs-size);
   font-family: inherit;
@@ -67,16 +156,19 @@ body {
   color: transparent;
   -webkit-text-stroke: 1px var(--text-stroke-color);
   white-space: nowrap;
+  transition: transform 0.3s ease;
 }
 
-/* Base text (keeps the button size) */
+.button:hover {
+  transform: scale(1.02);
+}
+
 .actual-text {
   position: relative;
   color: transparent;
   -webkit-text-stroke: 1px var(--text-stroke-color);
 }
 
-/* Hover overlay text */
 .hover-text {
   position: absolute;
   top: 0;
@@ -85,22 +177,30 @@ body {
   color: var(--animation-color);
   width: 0%;
   height: 100%;
-  border-right: 6px solid transparent; /* invisible border initially */
+  border-right: 6px solid transparent;
   overflow: hidden;
-  transition: 0.5s;
+  transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-text-stroke: 1px var(--animation-color);
   white-space: nowrap;
 }
 
-/* Hover Animation */
 .button:hover .hover-text {
   width: 100%;
-  filter: drop-shadow(0 0 23px var(--animation-color));
+  filter: drop-shadow(0 0 30px var(--animation-color));
   border-right: 6px solid var(--animation-color);
 }
 
 button:active {
-  transform: translateY(1px);
+  transform: scale(0.98);
+}
+
+/* Status message */
+.status {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  height: 20px;
+  transition: color 0.3s ease;
 }
 
 /* Footer Credits */
@@ -108,20 +208,13 @@ button:active {
   position: fixed;
   bottom: 20px;
   right: 30px;
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 0.85rem;
+  color: var(--text-muted);
   letter-spacing: 1px;
   z-index: 100;
 }
 
-.status {
-  margin-top: 20px;
-  font-size: 0.9rem;
-  color: #666;
-  height: 20px;
-}
-
-/* From Uiverse.io by Artahs */
+/* Social icons */
 ul {
   list-style: none;
   padding: 0;
@@ -137,54 +230,72 @@ ul {
   left: 30px;
   width: auto;
   z-index: 100;
+  gap: 12px;
 }
+
 .example-2 .icon-content {
-  margin: 0 10px;
   position: relative;
 }
+
 .example-2 .icon-content .tooltip {
   position: absolute;
   top: -30px;
   left: 50%;
   transform: translateX(-50%);
   color: #fff;
-  padding: 6px 10px;
-  border-radius: 5px;
+  padding: 8px 14px;
+  border-radius: 8px;
   opacity: 0;
   visibility: hidden;
-  font-size: 14px;
-  transition: all 0.3s ease;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
 }
+
 .example-2 .icon-content:hover .tooltip {
   opacity: 1;
   visibility: visible;
   top: -50px;
 }
+
 .example-2 .icon-content a {
   position: relative;
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  color: #4d4d4d;
-  background-color: #fff;
-  transition: all 0.3s ease-in-out;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  color: var(--text-secondary);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .example-2 .icon-content a:hover {
-  box-shadow: 3px 2px 45px 0px rgb(0 0 0 / 12%);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  transform: translateY(-4px);
 }
+
 .example-2 .icon-content a svg {
   position: relative;
   z-index: 1;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s ease;
 }
+
+.example-2 .icon-content a:hover svg {
+  transform: scale(1.1);
+}
+
 .example-2 .icon-content a:hover {
   color: white;
 }
+
 .example-2 .icon-content a .filled {
   position: absolute;
   top: auto;
@@ -193,8 +304,10 @@ ul {
   width: 100%;
   height: 0;
   background-color: #000;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 14px;
 }
+
 .example-2 .icon-content a:hover .filled {
   height: 100%;
 }
@@ -208,7 +321,117 @@ ul {
 .example-2 .icon-content a[data-social="linkedin"] ~ .tooltip {
   background-color: #0077b5;
 }
+
 .example-2 .icon-content a[data-social="leetcode"] .filled,
 .example-2 .icon-content a[data-social="leetcode"] ~ .tooltip {
   background-color: #ffa116;
+}
+
+/* Game container with premium overlay */
+#game-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+#game-frame {
+  width: min(95vw, 1200px);
+  height: min(85vh, 900px);
+  border: 2px solid var(--primary-color);
+  border-radius: 16px;
+  background: var(--background-dark);
+  box-shadow: 
+    0 0 60px var(--primary-glow),
+    inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.close-instruction {
+  color: var(--text-muted);
+  margin-top: 16px;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+/* Premium loader */
+.loader {
+  width: 56px;
+  height: 56px;
+  border: 3px solid var(--glass-border);
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  margin-bottom: 24px;
+  box-shadow: 0 0 20px var(--primary-glow);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: var(--primary-color);
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 3px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero {
+    padding: 2.5rem 1.5rem;
+    margin: 1rem;
+    border-radius: 16px;
+  }
+
+  .title {
+    font-size: 2.5rem;
+    letter-spacing: -1px;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .button {
+    --fs-size: 1.3em;
+    letter-spacing: 2px;
+  }
+
+  .example-2 {
+    bottom: 20px;
+    left: 20px;
+  }
+
+  .footer {
+    bottom: 15px;
+    right: 20px;
+    font-size: 0.75rem;
+  }
 }

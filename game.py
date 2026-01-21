@@ -292,7 +292,8 @@ class Game:
             safe_options.append(piece_safe_moves)
         return safe_options
 
-    def run(self):
+    async def run(self):
+        import asyncio
         run = True
         while run:
             self.timer.tick(FPS)
@@ -300,6 +301,7 @@ class Game:
             else: self.counter = 0
             
             self.draw_game()
+            await asyncio.sleep(0)  # Yield control for browser
             
             # Event Handling
             for event in pygame.event.get():
