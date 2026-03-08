@@ -50,12 +50,10 @@
 
         <button
           class="button"
-          data-text="▶ START MATCH"
           id="play-btn"
           onclick="launchGame()"
         >
-          <span class="actual-text">&nbsp;▶ START MATCH&nbsp;</span>
-          <span aria-hidden="true" class="hover-text">&nbsp;▶ START MATCH&nbsp;</span>
+          ▶ START MATCH
         </button>
       </div>
 
@@ -144,9 +142,44 @@
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
-      <div id="loader" class="hidden">
-        <div class="loader"></div>
-        <div class="loading-text">LOADING GAME...</div>
+      <div id="loader" class="hidden new-loader-container">
+        <div class="loading-bg"></div>
+        <div class="loading-vignette"></div>
+        <div id="ghost-container" class="ghost-layer"></div>
+        
+        <div class="loading-hero">
+          <svg class="king-svg" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(0, 10)">
+              <path d="M 15 110 L 85 110 C 90 110 93 106 93 100 C 93 94 88 90 82 90 L 18 90 C 12 90 7 94 7 100 C 7 106 10 110 15 110 Z" fill="var(--king-color)" stroke="var(--king-outline)" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M 22 90 L 78 90 L 70 80 L 30 80 Z" fill="var(--king-color)" stroke="var(--king-outline)" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M 33 80 C 33 55 42 42 42 42 L 58 42 C 58 42 67 55 67 80 Z" fill="var(--king-color)" stroke="var(--king-outline)" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M 33 42 L 67 42 C 70 42 72 39 72 36 C 72 33 70 30 67 30 L 33 30 C 30 30 28 33 28 36 C 28 39 30 42 33 42 Z" fill="var(--king-color)" stroke="var(--king-outline)" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M 33 30 L 67 30 L 80 8 L 60 17 L 50 5 L 40 17 L 20 8 Z" fill="var(--king-color)" stroke="var(--king-outline)" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M 46 5 L 54 5 L 54 -3 L 60 -3 L 60 -10 L 54 -10 L 54 -18 L 46 -18 L 46 -10 L 40 -10 L 40 -3 L 46 -3 Z" fill="var(--king-color)" stroke="var(--king-outline)" stroke-width="4" stroke-linejoin="round"/>
+              <line x1="22" y1="100" x2="78" y2="100" stroke="var(--king-outline)" stroke-width="2" opacity="0.5"/>
+              <line x1="31" y1="85" x2="69" y2="85" stroke="var(--king-outline)" stroke-width="2" opacity="0.5"/>
+              <line x1="38" y1="36" x2="62" y2="36" stroke="var(--king-outline)" stroke-width="2" opacity="0.5"/>
+              <circle cx="20" cy="8" r="3" fill="var(--king-color)" stroke="var(--king-outline)" stroke-width="2.5"/>
+              <circle cx="80" cy="8" r="3" fill="var(--king-color)" stroke="var(--king-outline)" stroke-width="2.5"/>
+              <circle cx="60" cy="17" r="2.5" fill="var(--king-color)" stroke="var(--king-outline)" stroke-width="2.5"/>
+              <circle cx="40" cy="17" r="2.5" fill="var(--king-color)" stroke="var(--king-outline)" stroke-width="2.5"/>
+            </g>
+          </svg>
+          <div class="hero-shadow"></div>
+        </div>
+
+        <div class="loading-section">
+          <div class="loading-board-rank" id="loading-bar">
+            <div class="loading-square"></div>
+            <div class="loading-square"></div>
+            <div class="loading-square"></div>
+            <div class="loading-square"></div>
+            <div class="loading-square"></div>
+            <div class="loading-square"></div>
+            <div class="loading-square"></div>
+            <div class="loading-square"></div>
+          </div>
+        </div>
       </div>
       <iframe id="game-frame" src="" frameborder="0"></iframe>
       <p class="close-instruction">Press ESC or the X button to exit game</p>
