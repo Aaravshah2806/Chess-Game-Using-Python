@@ -40,6 +40,7 @@ class Game:
         
         self.captured_pieces_white = []
         self.captured_pieces_black = []
+        self.last_move = None
         
         self.counter = 0
         self.winner = ''
@@ -146,10 +147,19 @@ class Game:
         return []
 
     def draw_game(self):
-        self.screen.fill('dark gray')
+        bg_color = (25, 27, 36)
+        self.screen.fill(bg_color)
         self.board.draw(self.screen)
         self.board.draw_status_text(self.screen, self.font, self.turn_step, self.medium_font)
         
+        # Draw Last Move Highlight
+        if self.last_move:
+            s_pos, e_pos = self.last_move
+            highlight_surface = pygame.Surface((100, 100), pygame.SRCALPHA)
+            highlight_surface.fill((245, 235, 100, 120)) # Transparent Yellow
+            self.screen.blit(highlight_surface, (s_pos[0] * 100, s_pos[1] * 100))
+            self.screen.blit(highlight_surface, (e_pos[0] * 100, e_pos[1] * 100))
+            
         # Draw Pieces
         for i, p in enumerate(self.white_pieces):
             p.draw(self.screen)
@@ -220,30 +230,31 @@ class Game:
                                      [king_pos[0] * 100 + 1, king_pos[1] * 100 + 1, 100, 100], 5)
 
     def draw_move_history(self):
-        # Background for history log
-        history_rect = pygame.Rect(805, 300, 180, 430)
-        pygame.draw.rect(self.screen, (40, 40, 40), history_rect)
-        pygame.draw.rect(self.screen, 'white', history_rect, 2)
+        # Background for history log using premium theme
+        history_rect = pygame.Rect(810, 200, 180, 520)
+        pygame.draw.rect(self.screen, (30, 32, 40), history_rect, border_radius=8)
+        pygame.draw.rect(self.screen, (80, 85, 95), history_rect, 2, border_radius=8)
         
-        self.screen.blit(self.font.render('Move History:', True, 'white'), (815, 310))
+        self.screen.blit(self.font.render('Move History', True, 'white'), (835, 215))
+        pygame.draw.line(self.screen, (80, 85, 95), (810, 245), (990, 245), 2)
         
-        # Show last 18 moves cleanly
-        log_slice = self.move_log[-18:] if len(self.move_log) > 18 else self.move_log
+        # Show last 22 moves cleanly
+        log_slice = self.move_log[-22:] if len(self.move_log) > 22 else self.move_log
         
         for i, move_text in enumerate(log_slice):
-            y_pos = 345 + (i * 20)
-            color = 'light gray' if i % 2 == 0 else 'dark gray'
+            y_pos = 255 + (i * 20)
+            color = (200, 200, 205) if i % 2 == 0 else (160, 160, 170)
             
             # Format numbers (1. e4 e5) 
             # We track each half-move, so index 0 = white 1, index 1 = black 1
             full_move_num = (len(self.move_log) - len(log_slice) + i) // 2 + 1
             if (len(self.move_log) - len(log_slice) + i) % 2 == 0:
                 display_text = f"{full_move_num}. {move_text}"
-                self.screen.blit(self.font.render(display_text, True, color), (815, y_pos))
+                self.screen.blit(self.font.render(display_text, True, color), (820, y_pos))
             else:
                 display_text = move_text
                 # offset black moves to right column
-                self.screen.blit(self.font.render(display_text, True, color), (900, y_pos - 20))
+                self.screen.blit(self.font.render(display_text, True, color), (915, y_pos - 20))
 
     def format_time(self, ms):
         if ms == float('inf'): return "---"
@@ -260,21 +271,33 @@ class Game:
         color_b = 'white' if self.turn_step >= 2 else 'gray'
         
         # Timers on right panel
-        pygame.draw.rect(self.screen, 'black', [805, 50, 180, 50], border_radius=5)
-        self.screen.blit(self.medium_font.render(self.format_time(self.black_time), True, color_b), (820, 55))
+        border_b = (255, 212, 59) if self.turn_step >= 2 else (60, 64, 72)
+        pygame.draw.rect(self.screen, (30, 32, 40), [810, 20, 180, 60], border_radius=8)
+        pygame.draw.rect(self.screen, border_b, [810, 20, 180, 60], 2, border_radius=8)
+        self.screen.blit(self.medium_font.render(self.format_time(self.black_time), True, color_b), (825, 30))
         
-        pygame.draw.rect(self.screen, 'black', [805, 120, 180, 50], border_radius=5)
-        self.screen.blit(self.medium_font.render(self.format_time(self.white_time), True, color_w), (820, 125))
+        border_w = (255, 212, 59) if self.turn_step < 2 else (60, 64, 72)
+        pygame.draw.rect(self.screen, (30, 32, 40), [810, 110, 180, 60], border_radius=8)
+        pygame.draw.rect(self.screen, border_w, [810, 110, 180, 60], 2, border_radius=8)
+        self.screen.blit(self.medium_font.render(self.format_time(self.white_time), True, color_w), (825, 120))
 
     def draw_game_over(self):
-        pygame.draw.rect(self.screen, 'black', [200, 200, 400, 70])
+        # Create translucent overlay
+        overlay = pygame.Surface((1000, 900), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))
+        self.screen.blit(overlay, (0,0))
+        
+        # Modal
+        pygame.draw.rect(self.screen, (25, 27, 36), [250, 300, 500, 200], border_radius=15)
+        pygame.draw.rect(self.screen, (255, 212, 59), [250, 300, 500, 200], 3, border_radius=15)
+        
         if self.winner == 'draw':
              text = 'Stalemate! Draw!'
         else:
-             text = f'{self.winner} won the game!'
-        self.screen.blit(self.font.render(text, True, 'white'), (210, 210))
-        self.screen.blit(self.font.render(f'Press ENTER to Restart', True, 'white'), (210, 240))
-        self.screen.blit(self.font.render(f'Press ESC to Exit', True, 'white'), (210, 270))
+             text = f'{self.winner.upper()} WINS THE GAME!'
+        
+        self.screen.blit(self.big_font.render(text, True, 'white'), (280, 330))
+        self.screen.blit(self.font.render(f'Press ENTER to Restart   |   Press ESC to Exit', True, (200, 200, 205)), (285, 420))
 
     def is_king_in_check(self, pieces, turn):
         # pieces argument seems unused in original logic?
@@ -462,6 +485,7 @@ class Game:
                             
                             notation = self.get_algebraic(selected_piece.name, start_pos, click_coords, is_capture)
                             self.move_log.append(notation)
+                            self.last_move = (start_pos, click_coords)
                             
                             # Update Turns
                             self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
@@ -486,10 +510,16 @@ class Game:
                                     break
                         
                         if click_coords in self.valid_moves and self.selection != 100:
+                            # Save state before moving
+                            self.save_state()
+
                             selected_piece = self.black_pieces[self.selection]
+                            start_pos = selected_piece.position
                             selected_piece.position = click_coords
                             
+                            is_capture = False
                             if click_coords in self.white_locations:
+                                is_capture = True
                                 for i, wp in enumerate(self.white_pieces):
                                     if wp.position == click_coords:
                                         self.captured_pieces_black.append(wp)
@@ -498,6 +528,10 @@ class Game:
                                         break
                                         
                             self.check_promotion(selected_piece, click_coords)
+                             
+                            notation = self.get_algebraic(selected_piece.name, start_pos, click_coords, is_capture)
+                            self.move_log.append(notation)
+                            self.last_move = (start_pos, click_coords)
                                         
                             self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
                             self.white_options = self.check_options(self.white_pieces, self.white_locations, 'white')
@@ -542,6 +576,7 @@ class Game:
                     
                     notation = self.get_algebraic(selected_piece.name, start_pos, target_pos, is_capture)
                     self.move_log.append(notation)
+                    self.last_move = (start_pos, target_pos)
                     
                     # Update State
                     self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
@@ -564,6 +599,7 @@ class Game:
                          self.captured_pieces_black = []
                          self.selection = 100
                          self.valid_moves = []
+                         self.last_move = None
                          self.history = []
                          self.move_log = []
                          self.init_clocks()
@@ -598,7 +634,8 @@ class Game:
             'cap_black': [(p.name, p.color) for p in self.captured_pieces_black],
             'turn': self.turn_step,
             'w_time': self.white_time,
-            'b_time': self.black_time
+            'b_time': self.black_time,
+            'last_move': self.last_move
         }
         self.history.append(state)
         
@@ -650,6 +687,7 @@ class Game:
         self.turn_step = state['turn']
         self.white_time = state['w_time']
         self.black_time = state['b_time']
+        self.last_move = state.get('last_move', None)
         self.selection = 100
         self.valid_moves = []
         self.winner = ''

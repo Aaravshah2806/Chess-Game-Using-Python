@@ -106,32 +106,33 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-/* Title with animated gradient */
+/* Split Title Colors */
 .title {
-  font-size: clamp(3rem, 8vw, 5rem);
-  font-weight: 700;
-  letter-spacing: -2px;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #fff 0%, var(--primary-color) 50%, var(--secondary-color) 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientShift 5s ease infinite;
-  text-shadow: 0 0 60px var(--primary-glow);
+  font-size: clamp(3.5rem, 8vw, 5.5rem);
+  font-weight: 900;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  letter-spacing: 2px;
 }
 
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+.title-py {
+  color: var(--python-yellow);
+  text-shadow: 0 0 25px rgba(255, 212, 59, 0.4);
+}
+
+.title-chess {
+  color: var(--python-blue);
+  text-shadow: 0 0 25px rgba(55, 118, 171, 0.5);
 }
 
 .subtitle {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   color: var(--text-secondary);
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
   font-weight: 300;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 }
 
 .feature-tags {
@@ -190,10 +191,14 @@ body {
 }
 
 .diff-dropdown {
-  background: rgba(10, 11, 16, 0.8);
+  background: rgba(10, 11, 16, 0.8) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') no-repeat right 12px center;
+  background-size: 16px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
   border: 1px solid var(--glass-border);
   color: var(--text-primary);
-  padding: 12px 24px;
+  padding: 12px 35px 12px 24px;
   border-radius: 12px;
   font-family: inherit;
   font-size: 1rem;
@@ -202,12 +207,18 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
   min-width: 250px;
-  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.diff-dropdown:hover {
+  background-color: rgba(25, 27, 36, 0.9);
+  border-color: rgba(255, 212, 59, 0.5);
+  transform: translateY(-2px);
 }
 
 .diff-dropdown:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 15px var(--primary-glow);
+  border-color: var(--python-yellow);
+  box-shadow: 0 0 15px rgba(255, 212, 59, 0.3);
 }
 
 .diff-dropdown option {
