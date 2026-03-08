@@ -4,11 +4,11 @@
 
 /* CSS Variables for theming */
 :root {
-  --primary-color: #37ff8b;
-  --primary-glow: rgba(55, 255, 139, 0.4);
-  --secondary-color: #00d9ff;
-  --background-dark: #0a0a0f;
-  --background-medium: #12121a;
+  --primary-color: #ffd43b;
+  --primary-glow: rgba(255, 212, 59, 0.4);
+  --secondary-color: #306998;
+  --background-dark: #0a0b10;
+  --background-medium: #141722;
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.6);
   --text-muted: rgba(255, 255, 255, 0.3);
@@ -53,7 +53,7 @@ body {
   100% { opacity: 0.8; }
 }
 
-/* Animated grid overlay */
+/* Animated checkerboard overlay */
 .background-overlay::before {
   content: '';
   position: absolute;
@@ -62,9 +62,8 @@ body {
   width: 100%;
   height: 100%;
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 60px 60px;
+    conic-gradient(rgba(255, 255, 255, 0.02) 90deg, transparent 90deg 180deg, rgba(255, 255, 255, 0.02) 180deg 270deg, transparent 270deg);
+  background-size: 80px 80px;
   z-index: -1;
 }
 
@@ -130,9 +129,43 @@ body {
 .subtitle {
   font-size: 1.25rem;
   color: var(--text-secondary);
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   font-weight: 300;
   letter-spacing: 0.5px;
+}
+
+.feature-tags {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.tag:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.tag-icon {
+  font-size: 1rem;
 }
 
 /* Premium button with hover effects */
@@ -358,6 +391,40 @@ ul {
   box-shadow: 
     0 0 60px var(--primary-glow),
     inset 0 0 30px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#game-frame.loaded {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.close-btn {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 250;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.close-btn:hover {
+  background: rgba(255, 0, 50, 0.3);
+  border-color: #ff3366;
+  color: #ff3366;
+  transform: rotate(90deg) scale(1.1);
 }
 
 .hidden {

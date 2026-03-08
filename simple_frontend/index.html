@@ -19,14 +19,20 @@
       <h1 class="title">PYTHON CHESS</h1>
       <p class="subtitle">Experience the classic strategy game.</p>
 
+      <div class="feature-tags">
+        <span class="tag"><span class="tag-icon">🐍</span> Python Powered</span>
+        <span class="tag"><span class="tag-icon">🤖</span> Play vs AI</span>
+        <span class="tag"><span class="tag-icon">⚡</span> Real-time</span>
+      </div>
+
       <button
         class="button"
-        data-text="PLAY GAME"
+        data-text="▶ PLAY GAME"
         id="play-btn"
         onclick="launchGame()"
       >
-        <span class="actual-text">&nbsp;PLAY GAME&nbsp;</span>
-        <span aria-hidden="true" class="hover-text">&nbsp;PLAY GAME&nbsp;</span>
+        <span class="actual-text">&nbsp;▶ PLAY GAME&nbsp;</span>
+        <span aria-hidden="true" class="hover-text">&nbsp;▶ PLAY GAME&nbsp;</span>
       </button>
 
       <p id="status" class="status"></p>
@@ -108,12 +114,18 @@
       <div class="footer">Made by Aarav Shah</div>
     
     <div id="game-container" class="hidden">
+      <button id="close-game-btn" class="close-btn hidden" aria-label="Close Game">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
       <div id="loader" class="hidden">
         <div class="loader"></div>
         <div class="loading-text">LOADING GAME...</div>
       </div>
       <iframe id="game-frame" src="" frameborder="0"></iframe>
-      <p class="close-instruction">Press ESC to exit game</p>
+      <p class="close-instruction">Press ESC or the X button to exit game</p>
     </div>
 
     <script src="script.js"></script>
