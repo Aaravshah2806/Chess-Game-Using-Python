@@ -13,8 +13,10 @@ function launchGame() {
   frame.classList.remove("loaded");
   closeBtn.classList.add("hidden");
 
-  // Load the pygbag game
-  frame.src = "game_view/index.html";
+  // Load the pygbag game with settings passed via Hash
+  const diffSelect = document.getElementById("difficulty-select");
+  const mode = diffSelect.value;
+  frame.src = `game_view/index.html#mode=${mode}`;
 
   const closeGame = () => {
     container.classList.add("hidden");

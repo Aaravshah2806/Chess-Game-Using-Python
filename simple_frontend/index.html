@@ -25,15 +25,24 @@
         <span class="tag"><span class="tag-icon">⚡</span> Real-time</span>
       </div>
 
-      <button
-        class="button"
-        data-text="▶ PLAY GAME"
-        id="play-btn"
-        onclick="launchGame()"
-      >
-        <span class="actual-text">&nbsp;▶ PLAY GAME&nbsp;</span>
-        <span aria-hidden="true" class="hover-text">&nbsp;▶ PLAY GAME&nbsp;</span>
-      </button>
+      <div class="launch-options">
+        <label for="difficulty-select" class="diff-label">Select Opponent:</label>
+        <select id="difficulty-select" class="diff-dropdown">
+          <option value="player">🆚 Local Multiplayer (P1 vs P2)</option>
+          <option value="easy">🤖 Play AI (Easy)</option>
+          <option value="medium" selected>🤖 Play AI (Medium)</option>
+          <option value="hard">🤖 Play AI (Hard)</option>
+        </select>
+        <button
+          class="button"
+          data-text="▶ START MATCH"
+          id="play-btn"
+          onclick="launchGame()"
+        >
+          <span class="actual-text">&nbsp;▶ START MATCH&nbsp;</span>
+          <span aria-hidden="true" class="hover-text">&nbsp;▶ START MATCH&nbsp;</span>
+        </button>
+      </div>
 
       <p id="status" class="status"></p>
 

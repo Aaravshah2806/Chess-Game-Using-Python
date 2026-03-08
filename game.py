@@ -2,9 +2,10 @@ import pygame
 from constants import *
 from board import Board
 from pieces import Pawn, Rook, Knight, Bishop, Queen, King
+from bot import ChessBot
 
 class Game:
-    def __init__(self):
+    def __init__(self, play_vs_ai=True, ai_difficulty='medium'):
         import os
         os.environ['SDL_VIDEO_CENTERED'] = '1'
         pygame.init()
@@ -19,10 +20,17 @@ class Game:
         self.load_images()
         self.init_pieces()
         
+        # AI Config
+        self.play_vs_ai = play_vs_ai
+        if self.play_vs_ai:
+            self.bot = ChessBot(color='black', difficulty=ai_difficulty)
+        
         # Game State
         self.turn_step = 0 # 0: White Select, 1: White Move, 2: Black Select, 3: Black Move
         self.selection = 100
         self.valid_moves = []
+        self.history = [] # Stack for undo (stores piece states and captured lists)
+        self.move_log = [] # Stack for algebraic notation
         
         self.captured_pieces_white = []
         self.captured_pieces_black = []
@@ -139,6 +147,12 @@ class Game:
         self.draw_captured()
         self.draw_check()
         
+        # Draw Undo Button Help Text
+        self.screen.blit(self.font.render('Press [U] to Undo Move', True, 'white'), (825, 750))
+        
+        # Draw Move History Logic
+        self.draw_move_history()
+        
         if self.game_over:
             self.draw_game_over()
             
@@ -181,6 +195,33 @@ class Game:
                 if in_check and self.counter < 15:
                     pygame.draw.rect(self.screen, 'dark blue', 
                                      [king_pos[0] * 100 + 1, king_pos[1] * 100 + 1, 100, 100], 5)
+
+    def draw_move_history(self):
+        # Background for history log
+        history_rect = pygame.Rect(805, 300, 180, 430)
+        pygame.draw.rect(self.screen, (40, 40, 40), history_rect)
+        pygame.draw.rect(self.screen, 'white', history_rect, 2)
+        
+        self.screen.blit(self.font.render('Move History:', True, 'white'), (815, 310))
+        
+        # Show last 18 moves cleanly
+        log_slice = self.move_log[-18:] if len(self.move_log) > 18 else self.move_log
+        
+        for i, move_text in enumerate(log_slice):
+            y_pos = 345 + (i * 20)
+            color = 'light gray' if i % 2 == 0 else 'dark gray'
+            
+            # Format numbers (1. e4 e5) 
+            # We track each half-move, so index 0 = white 1, index 1 = black 1
+            full_move_num = (len(self.move_log) - len(log_slice) + i) // 2 + 1
+            if (len(self.move_log) - len(log_slice) + i) % 2 == 0:
+                display_text = f"{full_move_num}. {move_text}"
+                self.screen.blit(self.font.render(display_text, True, color), (815, y_pos))
+            else:
+                display_text = move_text
+                # offset black moves to right column
+                self.screen.blit(self.font.render(display_text, True, color), (900, y_pos - 20))
+
 
     def draw_game_over(self):
         pygame.draw.rect(self.screen, 'black', [200, 200, 400, 70])
@@ -307,6 +348,10 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
+                    
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_u and not self.game_over:
+                        self.undo_move()
                 
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not self.game_over:
                     x_coord = event.pos[0] // 100
@@ -329,12 +374,18 @@ class Game:
                                     
                         # Move selected piece
                         if click_coords in self.valid_moves and self.selection != 100:
+                            # Save state before moving
+                            self.save_state()
+                            
                             # Move
                             selected_piece = self.white_pieces[self.selection]
+                            start_pos = selected_piece.position
                             selected_piece.position = click_coords
                             
+                            is_capture = False
                             # Capture
                             if click_coords in self.black_locations:
+                                is_capture = True
                                 for i, bp in enumerate(self.black_pieces):
                                     if bp.position == click_coords:
                                         self.captured_pieces_white.append(bp)
@@ -343,6 +394,9 @@ class Game:
                                         break
                             
                             self.check_promotion(selected_piece, click_coords)
+                            
+                            notation = self.get_algebraic(selected_piece.name, start_pos, click_coords, is_capture)
+                            self.move_log.append(notation)
                             
                             # Update Turns
                             self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
@@ -387,9 +441,55 @@ class Game:
                             self.valid_moves = []
                             
                             self.white_options = self.defend_check(self.white_pieces, self.white_options, 'white')
+                            
+            # --- AI Move Handling ---
+            if not self.game_over and self.play_vs_ai and self.turn_step >= 2:
+                # Black's Turn and AI is active
+                game_state = {
+                    'black_options': self.black_options,
+                    'black_pieces': self.black_pieces,
+                    'white_pieces': self.white_pieces
+                }
+                
+                best_move = self.bot.get_best_move(game_state)
+                
+                if best_move:
+                    # Execute AI Move
+                    piece_idx = best_move['piece_idx']
+                    target_pos = best_move['end_pos']
+                    
+                    selected_piece = self.black_pieces[piece_idx]
+                    start_pos = selected_piece.position
+                    selected_piece.position = target_pos
+                    
+                    is_capture = False
+                    # Capture Logic
+                    if target_pos in self.white_locations:
+                        is_capture = True
+                        for i, wp in enumerate(self.white_pieces):
+                            if wp.position == target_pos:
+                                self.captured_pieces_black.append(wp)
+                                if wp.name == 'king': self.winner = 'black'
+                                self.white_pieces.pop(i)
+                                break
+                    
+                    self.check_promotion(selected_piece, target_pos)
+                    
+                    notation = self.get_algebraic(selected_piece.name, start_pos, target_pos, is_capture)
+                    self.move_log.append(notation)
+                    
+                    # Update State
+                    self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
+                    self.white_options = self.check_options(self.white_pieces, self.white_locations, 'white')
+                    self.turn_step = 0
+                    self.white_options = self.defend_check(self.white_pieces, self.white_options, 'white')
+                else:
+                    # AI has no moves (Checkmate or Stalemate)
+                    # Handled by existing checkmate trigger below
+                    pass
 
-                # Game Over Reset
-                if event.type == pygame.KEYDOWN and self.game_over:
+            # Game Over Reset
+            if event.type == pygame.KEYDOWN and self.game_over:
                     if event.key == pygame.K_RETURN:
                          self.init_pieces()
                          self.turn_step = 0
@@ -399,6 +499,8 @@ class Game:
                          self.captured_pieces_black = []
                          self.selection = 100
                          self.valid_moves = []
+                         self.history = []
+                         self.move_log = []
                          
                          self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
                          self.white_options = self.check_options(self.white_pieces, self.white_locations, 'white')
@@ -417,6 +519,79 @@ class Game:
             pygame.display.flip()
         
         pygame.quit()
+        
+    def save_state(self):
+        import copy
+        # Deep clone piece configurations to restore later
+        # Pygame surfaces cannot be pickled/deepcopied easily, so we recreate the state
+        # instead of full object deepcopies, we just store properties needed to reconstruct.
+        state = {
+            'white': [(p.name, p.position) for p in self.white_pieces],
+            'black': [(p.name, p.position) for p in self.black_pieces],
+            'cap_white': [(p.name, p.color) for p in self.captured_pieces_white],
+            'cap_black': [(p.name, p.color) for p in self.captured_pieces_black],
+            'turn': self.turn_step
+        }
+        self.history.append(state)
+        
+    def get_algebraic(self, piece_name, start_pos, end_pos, is_capture):
+        cols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+        rows = ['8', '7', '6', '5', '4', '3', '2', '1']
+        
+        start_sq = cols[start_pos[0]] + rows[start_pos[1]]
+        end_sq = cols[end_pos[0]] + rows[end_pos[1]]
+        
+        piece_char = ''
+        if piece_name == 'knight': piece_char = 'N'
+        elif piece_name != 'pawn': piece_char = piece_name[0].upper()
+        
+        cap = 'x' if is_capture else ''
+        
+        if piece_name == 'pawn' and is_capture:
+            return f"{start_sq[0]}{cap}{end_sq}"
+        
+        return f"{piece_char}{cap}{end_sq}"
+        
+    def undo_move(self):
+        if not self.history:
+             return
+             
+        # If playing vs AI, pop once for AI move, once for player move
+        state = self.history.pop()
+        
+        if self.move_log:
+            self.move_log.pop()
+        
+        # reconstruct pieces
+        self.white_pieces = []
+        for name, pos in state['white']:
+            self.white_pieces.append(self.create_piece('white', name, pos))
+            
+        self.black_pieces = []
+        for name, pos in state['black']:
+            self.black_pieces.append(self.create_piece('black', name, pos))
+            
+        self.captured_pieces_white = []
+        for name, color in state['cap_white']:
+            self.captured_pieces_white.append(self.create_piece(color, name, (-1,-1)))
+            
+        self.captured_pieces_black = []
+        for name, color in state['cap_black']:
+            self.captured_pieces_black.append(self.create_piece(color, name, (-1,-1)))
+            
+        self.turn_step = state['turn']
+        self.selection = 100
+        self.valid_moves = []
+        self.winner = ''
+        self.game_over = False
+        
+        self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
+        self.white_options = self.check_options(self.white_pieces, self.white_locations, 'white')
+        
+        if self.turn_step == 0:
+            self.white_options = self.defend_check(self.white_pieces, self.white_options, 'white')
+        else:
+            self.black_options = self.defend_check(self.black_pieces, self.black_options, 'black')
                 
     def check_promotion(self, piece, clicked_coords):
         if piece.name == 'pawn':
