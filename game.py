@@ -1,11 +1,13 @@
 import pygame
 from constants import *
 from board import Board
+from constants import *
+from board import Board
 from pieces import Pawn, Rook, Knight, Bishop, Queen, King
 from bot import ChessBot
 
 class Game:
-    def __init__(self, play_vs_ai=True, ai_difficulty='medium'):
+    def __init__(self, play_vs_ai=True, ai_difficulty='medium', time_control='untimed'):
         import os
         os.environ['SDL_VIDEO_CENTERED'] = '1'
         pygame.init()
@@ -24,6 +26,10 @@ class Game:
         self.play_vs_ai = play_vs_ai
         if self.play_vs_ai:
             self.bot = ChessBot(color='black', difficulty=ai_difficulty)
+            
+        # Time Control Config
+        self.time_control = time_control
+        self.init_clocks()
         
         # Game State
         self.turn_step = 0 # 0: White Select, 1: White Move, 2: Black Select, 3: Black Move
@@ -42,6 +48,20 @@ class Game:
         # Initial Options Calc
         self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
         self.white_options = self.check_options(self.white_pieces, self.white_locations, 'white')
+
+    def init_clocks(self):
+        # Time in milliseconds
+        if self.time_control == 'blitz':
+            self.white_time = 3 * 60 * 1000
+            self.black_time = 3 * 60 * 1000
+        elif self.time_control == 'rapid':
+            self.white_time = 10 * 60 * 1000
+            self.black_time = 10 * 60 * 1000
+        else:
+            self.white_time = float('inf')
+            self.black_time = float('inf')
+            
+        self.last_tick = pygame.time.get_ticks()
 
     def load_images(self):
         # Helper to load and scale
@@ -153,6 +173,9 @@ class Game:
         # Draw Move History Logic
         self.draw_move_history()
         
+        # Draw Clocks
+        self.draw_clocks()
+        
         if self.game_over:
             self.draw_game_over()
             
@@ -222,6 +245,26 @@ class Game:
                 # offset black moves to right column
                 self.screen.blit(self.font.render(display_text, True, color), (900, y_pos - 20))
 
+    def format_time(self, ms):
+        if ms == float('inf'): return "---"
+        if ms <= 0: return "0:00"
+        s = ms // 1000
+        m, s = divmod(s, 60)
+        return f"{int(m)}:{int(s):02d}"
+
+    def draw_clocks(self):
+        if self.time_control == 'untimed':
+            return
+            
+        color_w = 'gray' if self.turn_step >= 2 else 'white'
+        color_b = 'white' if self.turn_step >= 2 else 'gray'
+        
+        # Timers on right panel
+        pygame.draw.rect(self.screen, 'black', [805, 50, 180, 50], border_radius=5)
+        self.screen.blit(self.medium_font.render(self.format_time(self.black_time), True, color_b), (820, 55))
+        
+        pygame.draw.rect(self.screen, 'black', [805, 120, 180, 50], border_radius=5)
+        self.screen.blit(self.medium_font.render(self.format_time(self.white_time), True, color_w), (820, 125))
 
     def draw_game_over(self):
         pygame.draw.rect(self.screen, 'black', [200, 200, 400, 70])
@@ -336,8 +379,30 @@ class Game:
     async def run(self):
         import asyncio
         run = True
+        self.last_tick = pygame.time.get_ticks()
+        
         while run:
             self.timer.tick(FPS)
+            
+            # --- Timer Logic ---
+            current_tick = pygame.time.get_ticks()
+            delta_time = current_tick - self.last_tick
+            self.last_tick = current_tick
+            
+            if not self.game_over and self.time_control != 'untimed':
+                if self.turn_step <= 1:
+                    self.white_time -= delta_time
+                    if self.white_time <= 0:
+                        self.white_time = 0
+                        self.winner = 'black (on time)'
+                        self.game_over = True
+                else:
+                    self.black_time -= delta_time
+                    if self.black_time <= 0:
+                        self.black_time = 0
+                        self.winner = 'white (on time)'
+                        self.game_over = True
+            
             if self.counter < 30: self.counter += 1
             else: self.counter = 0
             
@@ -501,6 +566,7 @@ class Game:
                          self.valid_moves = []
                          self.history = []
                          self.move_log = []
+                         self.init_clocks()
                          
                          self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
                          self.white_options = self.check_options(self.white_pieces, self.white_locations, 'white')
@@ -530,7 +596,9 @@ class Game:
             'black': [(p.name, p.position) for p in self.black_pieces],
             'cap_white': [(p.name, p.color) for p in self.captured_pieces_white],
             'cap_black': [(p.name, p.color) for p in self.captured_pieces_black],
-            'turn': self.turn_step
+            'turn': self.turn_step,
+            'w_time': self.white_time,
+            'b_time': self.black_time
         }
         self.history.append(state)
         
@@ -580,6 +648,8 @@ class Game:
             self.captured_pieces_black.append(self.create_piece(color, name, (-1,-1)))
             
         self.turn_step = state['turn']
+        self.white_time = state['w_time']
+        self.black_time = state['b_time']
         self.selection = 100
         self.valid_moves = []
         self.winner = ''

@@ -15,8 +15,10 @@ function launchGame() {
 
   // Load the pygbag game with settings passed via Hash
   const diffSelect = document.getElementById("difficulty-select");
+  const timeSelect = document.getElementById("timer-select");
   const mode = diffSelect.value;
-  frame.src = `game_view/index.html#mode=${mode}`;
+  const time = timeSelect.value;
+  frame.src = `game_view/index.html#mode=${mode}&time=${time}`;
 
   const closeGame = () => {
     container.classList.add("hidden");
@@ -57,3 +59,23 @@ function launchGame() {
     }
   };
 }
+
+// Logic to hide Timer when playing against AI
+document.addEventListener("DOMContentLoaded", () => {
+  const diffSelect = document.getElementById("difficulty-select");
+  const timeGroup = document.getElementById("time-group");
+
+  const toggleTimerVisibility = () => {
+    if (diffSelect.value !== "player") {
+      timeGroup.classList.add("hidden");
+    } else {
+      timeGroup.classList.remove("hidden");
+    }
+  };
+
+  // Run on load
+  toggleTimerVisibility();
+
+  // Run on change
+  diffSelect.addEventListener("change", toggleTimerVisibility);
+});

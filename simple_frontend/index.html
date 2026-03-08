@@ -26,13 +26,25 @@
       </div>
 
       <div class="launch-options">
-        <label for="difficulty-select" class="diff-label">Select Opponent:</label>
-        <select id="difficulty-select" class="diff-dropdown">
-          <option value="player">🆚 Local Multiplayer (P1 vs P2)</option>
-          <option value="easy">🤖 Play AI (Easy)</option>
-          <option value="medium" selected>🤖 Play AI (Medium)</option>
-          <option value="hard">🤖 Play AI (Hard)</option>
-        </select>
+        <div class="option-group">
+          <label for="difficulty-select" class="diff-label">Opponent:</label>
+          <select id="difficulty-select" class="diff-dropdown">
+            <option value="player">🆚 Local Multiplayer (P1 vs P2)</option>
+            <option value="easy">🤖 Play AI (Easy)</option>
+            <option value="medium" selected>🤖 Play AI (Medium)</option>
+            <option value="hard">🤖 Play AI (Hard)</option>
+          </select>
+        </div>
+
+        <div class="option-group" id="time-group">
+          <label for="timer-select" class="diff-label">Time Control:</label>
+          <select id="timer-select" class="diff-dropdown">
+            <option value="untimed" selected>♾️ Untimed (Casual)</option>
+            <option value="blitz">⚡ Blitz (3 min)</option>
+            <option value="rapid">⏱️ Rapid (10 min)</option>
+          </select>
+        </div>
+
         <button
           class="button"
           data-text="▶ START MATCH"
